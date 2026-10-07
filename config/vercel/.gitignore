@@ -1,0 +1,4 @@
+pricing.json
+.env*
+.vercel/
+__pycache__/

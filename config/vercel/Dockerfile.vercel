@@ -1,0 +1,18 @@
+FROM ghcr.io/berriai/litellm:v1.104.0@sha256:625981c83410a3ea68eb0697590a57ec1d764d634514d54fa5db0591077ee839
+
+WORKDIR /app
+ENV LITELLM_MODE=PRODUCTION \
+    LITELLM_LOCAL_MODEL_COST_MAP=True \
+    LITELLM_LOG=ERROR \
+    DISABLE_SCHEMA_UPDATE=true \
+    GRACEFUL_SHUTDOWN_TIMEOUT=5 \
+    PORT=4000
+
+COPY pricing.json /app/deploy/pricing.json
+RUN python -c "import importlib.util,json,pathlib; source=pathlib.Path('/app/deploy/pricing.json'); data=json.loads(source.read_text()); assert data['azure/gpt-6-astra']['input_cost_per_token'] > 0; package=pathlib.Path(importlib.util.find_spec('litellm').origin).parent; (package/'model_prices_and_context_window_backup.json').write_bytes(source.read_bytes())"
+COPY config.yaml start.sh readiness_guard.py listen.py /app/deploy/
+ENV PYTHONPATH=/app/deploy
+RUN python -c "from pathlib import Path; p=Path('/app/deploy/start.sh'); p.write_bytes(p.read_bytes().replace(b'\r\n', b'\n'))" && chmod 755 /app/deploy/start.sh
+
+EXPOSE 4000
+ENTRYPOINT ["python", "/app/deploy/listen.py"]
