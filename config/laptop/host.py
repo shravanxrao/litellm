@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 DIRECTORY: Final = Path(__file__).resolve().parent
 RUNTIME: Final = DIRECTORY / ".runtime"
 REQUIRED: Final = (
-    "AZURE_API_BASE", "AZURE_API_KEY", "DATABASE_URL", "REDIS_URL",
+    "DATABASE_URL", "REDIS_URL",
     "LITELLM_MASTER_KEY", "LITELLM_SALT_KEY", "UI_USERNAME", "UI_PASSWORD",
 )
 
@@ -30,7 +30,7 @@ def load_environment() -> None:
     if min(len(os.environ[name]) for name in ("LITELLM_MASTER_KEY", "LITELLM_SALT_KEY", "UI_PASSWORD")) < 24:
         raise ValueError("Use strong master, encryption and admin secrets")
     schemes: Final = {
-        "AZURE_API_BASE": ("https",), "DATABASE_URL": ("postgres", "postgresql"),
+        "DATABASE_URL": ("postgres", "postgresql"),
         "REDIS_URL": ("redis", "rediss"),
     }
     for name, allowed in schemes.items():

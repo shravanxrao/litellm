@@ -32,7 +32,8 @@ def main() -> int:
                     return 1
             child: Final = subprocess.Popen(
                 [str(runtime / "cloudflared.exe"), "tunnel", "--config", str(runtime / "tunnel.yaml"),
-                 "--loglevel", "warn", "run"], stdout=output, stderr=error,
+                 "--loglevel", "warn", "run", "--dns-resolver-addrs", "1.1.1.1:53",
+                 "--dns-resolver-addrs", "8.8.8.8:53"], stdout=output, stderr=error,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
             )
             try:

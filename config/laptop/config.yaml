@@ -1,12 +1,4 @@
-model_list:
-  - model_name: gpt-6-astra
-    litellm_params:
-      model: azure/gpt-6-astra
-      api_base: os.environ/AZURE_API_BASE
-      api_key: os.environ/AZURE_API_KEY
-      api_version: v1
-    model_info:
-      base_model: azure/gpt-6-astra
+model_list: []
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
@@ -19,7 +11,7 @@ general_settings:
     url: os.environ/REDIS_URL
   database_connection_pool_limit: 3
   database_connection_timeout: 10
-  proxy_batch_write_at: 1
+  proxy_batch_write_at: 10
   store_model_in_db: true
   trusted_proxy_ranges: []
 
@@ -27,7 +19,8 @@ litellm_settings:
   callbacks:
     - readiness_guard.budget_readiness_guard
   cache: false
-  enable_redis_auth_cache: true
+  enable_redis_auth_cache: false
+  disable_aiohttp_transport: true
   request_timeout: 240
   set_verbose: false
   json_logs: true

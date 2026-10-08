@@ -153,12 +153,17 @@ class TestCheckToolsAllowlist:
     async def test_no_allowlist_passes(self):
         token = _token(metadata={}, team_metadata={})
         body = {"tools": [{"type": "function", "function": {"name": "get_weather"}}]}
-        await check_tools_allowlist(
-            request_body=body,
-            valid_token=token,
-            team_object=None,
-            route="/v1/chat/completions",
-        )
+        with patch(
+            "litellm.proxy.auth.auth_checks.extract_request_tool_names",
+            side_effect=AssertionError("Unrestricted keys must skip tool extraction"),
+        ) as extractor:
+            await check_tools_allowlist(
+                request_body=body,
+                valid_token=token,
+                team_object=None,
+                route="/v1/chat/completions",
+            )
+        extractor.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_allowed_tool_passes(self):
